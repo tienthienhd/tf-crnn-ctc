@@ -1,6 +1,8 @@
 import tensorflow as tf
 import numpy as np
 
+import config
+
 
 class CharacterAccuracy(tf.keras.metrics.Metric):
     def __init__(self, name='char_acc', **kwargs):
@@ -11,7 +13,7 @@ class CharacterAccuracy(tf.keras.metrics.Metric):
         input_len = np.ones(y_pred.shape[0]) * y_pred.shape[1]
         # Use greedy search. For complex tasks, you can use beam search
         results = tf.keras.backend.ctc_decode(y_pred, input_length=input_len, greedy=True)[0][0][
-                  :, :dataset_config['max_len']
+                  :, :config.DatasetConfig.max_len
                   ]
         preds_idx = tf.cast(results, dtype=tf.int32)
         targets = tf.cast(y_true, dtype=tf.int32)

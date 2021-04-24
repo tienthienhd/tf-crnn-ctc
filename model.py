@@ -49,7 +49,7 @@ def get_rnn_feature(x):
     x = tf.keras.layers.Dense(config.RnnConfig.input_depth, activation="relu")(x)
     x = tf.keras.layers.Dropout(config.RnnConfig.input_dropout)(x)
 
-    for i, block in enumerate(config.RnnConfig.rnn_layers):
+    for i, block in enumerate(config.RnnConfig.layers):
         if 'dropout' not in block:
             block['dropout'] = 0.0
         x = tf.keras.layers.Bidirectional(
