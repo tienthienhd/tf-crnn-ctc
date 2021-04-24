@@ -18,10 +18,10 @@ def get_data(data: str = 'train') -> tf.data.Dataset:
 
     # Get raw data
     if data == 'train':
-        file_patterns = config.dataset['train_file_patterns']
+        file_patterns = config.DatasetConfig.train_file_patterns
     else:
-        file_patterns = config.dataset['test_file_patterns']
-    dataset = get_dataset(config.dataset['data_dir'], file_patterns)
+        file_patterns = config.DatasetConfig.test_file_patterns
+    dataset = get_dataset(config.DatasetConfig.data_dir, file_patterns)
     dataset = dataset.prefetch(tf.data.experimental.AUTOTUNE)
 
     # Preprocess data
@@ -36,15 +36,15 @@ def get_data(data: str = 'train') -> tf.data.Dataset:
 
     # dataset = dataset.repeat(config.training['epochs'])
 
-    # dataset = dataset.padded_batch(config.training['batch_size'],
-    #                                padded_shapes={
-    #                                    'image': [config.dataset['height'], None, 3],
-    #                                    'label': [None]
-    #                                },
-    #                                padding_values={
-    #                                    'image': 0.0,
-    #                                    'label': len(config.dataset['charset']) + 1
-    #                                })
+    dataset = dataset.padded_batch(config.TrainingConfig.batch_size,
+                                   padded_shapes={
+                                       'image': [config.DatasetConfig.height, None, 3],
+                                       'label': [None]
+                                   },
+                                   padding_values={
+                                       'image': 0.0,
+                                       'label': len(config.DatasetConfig.charset) + 1
+                                   })
 
     return dataset
 
@@ -146,13 +146,15 @@ def preprocess_image(image):
     image = tf.image.convert_image_dtype(image, tf.float32)
     image = tf.subtract(image, 0.5)
 
-    image = tf.image.resize(image, [config.dataset['height'], config.dataset['max_width']], preserve_aspect_ratio=True)
+    image = tf.image.resize(image, [config.DatasetConfig.height, config.DatasetConfig.max_width],
+                            preserve_aspect_ratio=True)
 
     # Pad with copy of first row to expand to 32 pixels height
     # first_row = tf.slice(image, [0, 0, 0], [1, -1, -1])
     # image = tf.concat([first_row, image], 0)
 
     return image
+
 
 if __name__ == '__main__':
     base_dir = '/media/thiennt/projects/cv_end_to_end/training/ocr/crnn_ctc/datasets/vr_plate'
@@ -162,7 +164,7 @@ if __name__ == '__main__':
     print(dataset)
 
     char_to_num = tf.keras.layers.experimental.preprocessing.StringLookup(
-        vocabulary=list(config.dataset['charset']), num_oov_indices=0, mask_token=None
+        vocabulary=list(config.DatasetConfig.charset), num_oov_indices=0, mask_token=None
     )
 
     num_to_char = tf.keras.layers.experimental.preprocessing.StringLookup(

@@ -26,7 +26,7 @@ class CTCLayer(tf.keras.layers.Layer):
 
 
 def get_cnn_feature(x):
-    for i, block in enumerate(config.cnn):
+    for i, block in enumerate(config.CnnConfig.layers):
         x = tf.keras.layers.Conv2D(filters=block['filter'], kernel_size=block['kernel_size'], padding=block['padding'],
                                    strides=block['strides'], name=f'conv_{i}')(x)
         x = tf.keras.layers.MaxPooling2D(block['pool_size'], padding=block['padding_pool'], name=f'max_pool_{i}')(x)
@@ -36,22 +36,37 @@ def get_cnn_feature(x):
 
 
 def get_rnn_feature(x):
-    # x: (b, h, w, c)
+    """
+    Feed cnn feature to B LSTM
+    Args:
+        x: tensor, shape=(b, h, w, c)
+
+    Returns:
+
+    """
     x = tf.keras.layers.Permute(dims=(2, 1, 3))(x)
     x = tf.keras.layers.TimeDistributed(tf.keras.layers.Flatten())(x)
-    for i, block in enumerate(config.rnn):
-        x = tf.keras.layers.Bidirectional(tf.keras.layers.LSTM(units=block['units'], return_sequences=True),
-                                          name=f'BLSTM_{i}')(x)
+    x = tf.keras.layers.Dense(config.RnnConfig.input_depth, activation="relu")(x)
+    x = tf.keras.layers.Dropout(config.RnnConfig.input_dropout)(x)
+
+    for i, block in enumerate(config.RnnConfig.rnn_layers):
+        if 'dropout' not in block:
+            block['dropout'] = 0.0
+        x = tf.keras.layers.Bidirectional(
+            tf.keras.layers.LSTM(units=block['units'],
+                                 return_sequences=True,
+                                 dropout=block['dropout']),
+            name=f'BLSTM_{i}')(x)
     return x
 
 
 def get_output(x):
-    outputs = tf.keras.layers.Dense(units=config.head['classes'], activation='softmax', name='outputs')(x)
+    outputs = tf.keras.layers.Dense(units=config.HeadConfig.classes, activation='softmax', name='outputs')(x)
     return outputs
 
 
 def build_model():
-    img_input = tf.keras.layers.Input(shape=(config.dataset['height'], None, 3), dtype=tf.float32, name='image')
+    img_input = tf.keras.layers.Input(shape=(config.DatasetConfig.height, None, 3), dtype=tf.float32, name='image')
     label = tf.keras.layers.Input(shape=(None,), dtype=tf.float32, name='label')
 
     x = get_cnn_feature(img_input)
@@ -64,7 +79,7 @@ def build_model():
 
     train_model = tf.keras.Model(inputs=[img_input, label], outputs=ctc_output, name='train_model')
 
-    train_model.compile(config.training['optimizer'])
+    train_model.compile(config.TrainingConfig.optimizer)
 
     return model, train_model
 
@@ -73,13 +88,17 @@ if __name__ == '__main__':
     model, train_model = build_model()
     model.summary()
     train_model.summary()
-    import numpy as np
+
     i1 = tf.random.uniform(shape=[2, 32, 128, 3])
     i2 = tf.random.uniform(shape=[2, 32, 64, 3])
-    val_dataset = get_data(config.dataset['data_dir'], config.dataset['test_file_patterns'])#.batch(config.training['batch_size'])
+    val_dataset = get_data('test')  # .batch(config.training['batch_size'])
     print(val_dataset)
+
+
     def test(data):
         return data['image']
+
+
     a = val_dataset.map(test).padded_batch(4, [32, None, 3], 0.0).take(2).as_numpy_iterator()
     a = list(a)
 

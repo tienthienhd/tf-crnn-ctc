@@ -1,7 +1,7 @@
 import os
 import matplotlib.pyplot as plt
 import tensorflow as tf
-import model
+from model import build_model
 import config
 from data_provider_tfrecord import get_data
 
@@ -12,23 +12,28 @@ def run():
     val_dataset = get_data(data="test")
 
     # Build model
-    model, training_model = model.build_model()
+    model, training_model = build_model()
     training_model.summary()
     # tf.keras.utils.plot_model(training_model, show_shapes=True, show_dtype=True, expand_nested=True,
     #                           show_layer_names=True)
 
     callbacks = [
         tf.keras.callbacks.EarlyStopping(patience=5),
-        tf.keras.callbacks.TensorBoard(config.training['checkpoint'], write_images=True, update_freq='batch'),
-        tf.keras.callbacks.ModelCheckpoint(os.path.join(config.training['checkpoint'], "best_model.h5"),
+        tf.keras.callbacks.TensorBoard(config.TrainingConfig.checkpoints, write_images=True, update_freq='batch'),
+        tf.keras.callbacks.ModelCheckpoint(os.path.join(config.TrainingConfig.checkpoints, "best_model.h5"),
                                            save_best_only=True, save_freq=100)
     ]
 
-    history = training_model.fit(train_dataset, validation_data=val_dataset, callbacks=callbacks, steps_per_epoch=100,
-                                 epochs=config.training['epochs'])
+    history = training_model.fit(train_dataset,
+                                 validation_data=val_dataset,
+                                 validation_steps=100,
+                                 validation_freq=1,
+                                 callbacks=callbacks,
+                                 batch_size=config.TrainingConfig.batch_size,
+                                 epochs=config.TrainingConfig.epochs)
 
     # Save model
-    model.save(os.path.join(config.training['checkpoint'], "inference_model.h5"), include_optimizer=False)
+    model.save(os.path.join(config.TrainingConfig.checkpoints, "inference_model.h5"), include_optimizer=False)
 
     # plot history
     plt.plot(history.history['loss'])
