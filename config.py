@@ -6,8 +6,8 @@ class DatasetConfig:
     data_name = 'plate_2'
     image_dir = '/media/data_it/Data_set/database_image/card/vr/info/train/plate_new'
     label_file = '/media/data_it/Data_set/database_image/card/vr/info/train/vr_plate_label_train.csv'
-
-    data_dir = '/media/thiennt/projects/cv_end_to_end/training/ocr/crnn_ctc/datasets/vr_plate'
+    work_dir = '/media/thiennt/projects/cv_end_to_end/training/ocr/crnn_ctc/datasets/vr_plate'
+    data_dir = os.path.join(work_dir, 'annotations')
     train_file_patterns = ['*_train.records*']
     test_file_patterns = ['*_test.records*']
     height = 32
@@ -45,7 +45,7 @@ class TrainingConfig:
     optimizer = 'adam'
     learning_rate = 0.001
     epochs = 10
-    checkpoints = os.path.join(DatasetConfig.data_dir, 'checkpoint')
+    checkpoints = os.path.join(DatasetConfig.work_dir, 'models')
     batch_size = 64
 
 
@@ -56,7 +56,8 @@ def load_config(config_path: str):
     DatasetConfig.data_name = data_config['data_name']
     DatasetConfig.image_dir = data_config['image_dir']
     DatasetConfig.label_file = data_config['label_file']
-    DatasetConfig.data_dir = data_config['data_dir']
+    DatasetConfig.work_dir = data_config['work_dir']
+    DatasetConfig.data_dir = os.path.join(DatasetConfig.work_dir, 'annotations')
     DatasetConfig.train_file_patterns = data_config['train_file_patterns']
     DatasetConfig.test_file_patterns = data_config['test_file_patterns']
     DatasetConfig.height = data_config['height']
@@ -81,5 +82,5 @@ def load_config(config_path: str):
     TrainingConfig.optimizer = training_config['optimizer']
     TrainingConfig.learning_rate = training_config['learning_rate']
     TrainingConfig.epochs = training_config['epochs']
-    TrainingConfig.checkpoints = os.path.join(DatasetConfig.data_dir, 'checkpoint')
+    TrainingConfig.checkpoints = os.path.join(DatasetConfig.work_dir, 'models')
     TrainingConfig.batch_size = training_config['batch_size']

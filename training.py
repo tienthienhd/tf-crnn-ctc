@@ -76,7 +76,7 @@ if __name__ == '__main__':
     if args.cfg != 'config.json':
         cfg = args.cfg
     else:
-        cfg = os.path.join(f'./datasets/{args.data}/config.json')
+        cfg = os.path.join(f'./datasets/{args.data}/models/config.json')
 
     config.load_config(cfg)
     run()

@@ -3,7 +3,8 @@
     "data_name": "plate_2",
     "image_dir": "/media/data_it/Data_set/database_image/card/vr/info/train/plate_new",
     "label_file": "/media/data_it/Data_set/database_image/card/vr/info/train/vr_plate_label_train.csv",
-    "data_dir": "/media/thiennt/projects/cv_end_to_end/training/ocr/crnn_ctc/datasets/vr_plate",
+    "work_dir": "/media/thiennt/projects/cv_end_to_end/training/ocr/crnn_ctc/datasets/vr_plate",
+    "data_dir": "annotations",
     "train_file_patterns": [
       "*_train.records*"
     ],
