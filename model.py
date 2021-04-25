@@ -66,7 +66,8 @@ def get_output(x):
 
 
 def build_model():
-    img_input = tf.keras.layers.Input(shape=(config.DatasetConfig.height, None, 3), dtype=tf.float32, name='image')
+    img_input = tf.keras.layers.Input(shape=(config.DatasetConfig.height, None, config.DatasetConfig.depth),
+                                      dtype=tf.float32, name='image')
     label = tf.keras.layers.Input(shape=(None,), dtype=tf.float32, name='label')
 
     x = get_cnn_feature(img_input)

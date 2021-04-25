@@ -11,6 +11,7 @@ class DatasetConfig:
     train_file_patterns = ['*_train.records*']
     test_file_patterns = ['*_test.records*']
     height = 32
+    depth = 1
     max_width = 512
     charset = sorted('0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ.-')
     max_len = 11
@@ -59,6 +60,7 @@ def load_config(config_path: str):
     DatasetConfig.train_file_patterns = data_config['train_file_patterns']
     DatasetConfig.test_file_patterns = data_config['test_file_patterns']
     DatasetConfig.height = data_config['height']
+    DatasetConfig.depth = data_config['depth']
     DatasetConfig.max_width = data_config['max_width']
     DatasetConfig.charset = sorted(data_config['charset'])
     DatasetConfig.max_len = data_config['max_len']

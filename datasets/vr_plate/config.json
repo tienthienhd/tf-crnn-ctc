@@ -12,6 +12,7 @@
     ],
     "height": 32,
     "max_width": 512,
+    "depth": 1,
     "charset": "-.0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ",
     "max_len": 11,
     "test_size": 0.0
@@ -59,7 +60,7 @@
   "TrainingConfig": {
     "optimizer": "adam",
     "learning_rate": 0.001,
-    "epochs": 10,
+    "epochs": 50,
     "checkpoints": "",
     "batch_size": 64
   }

@@ -38,7 +38,7 @@ def get_data(data: str = 'train') -> tf.data.Dataset:
 
     dataset = dataset.padded_batch(config.TrainingConfig.batch_size,
                                    padded_shapes={
-                                       'image': [config.DatasetConfig.height, None, 3],
+                                       'image': [config.DatasetConfig.height, None, config.DatasetConfig.depth],
                                        'label': [None]
                                    },
                                    padding_values={
@@ -94,7 +94,7 @@ def preprocess_fn(data):
     # Initialize fields according to feature map
 
     # Convert to grayscale
-    image = tf.image.decode_jpeg(features['image/encoded'], channels=3)
+    image = tf.image.decode_jpeg(features['image/encoded'], channels=3 if config.DatasetConfig.depth == 3 else 1)
 
     width = tf.cast(features['image/width'], tf.int32)  # for ctc_loss
     # label = tf.io.serialize_sparse(features['image/labels'])  # for batching
