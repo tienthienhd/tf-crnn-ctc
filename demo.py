@@ -1,4 +1,6 @@
+import argparse
 import glob
+import os
 
 import cv2
 from tensorflow.keras.models import load_model
@@ -34,6 +36,18 @@ def inference(img):
 
 
 if __name__ == '__main__':
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--data', type=str, default='vr_plate')
+    parser.add_argument('--cfg', type=str, default="config.json")
+
+    args = parser.parse_args()
+
+    if args.cfg != 'config.json':
+        cfg = args.cfg
+    else:
+        cfg = os.path.join(f'./datasets/{args.data}/config.json')
+
+    config.load_config(cfg)
     for file in img_dir:
         img = cv2.imread(file, cv2.IMREAD_UNCHANGED)
         h, w, c = img.shape

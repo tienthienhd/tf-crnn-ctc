@@ -78,6 +78,10 @@ def get_dataset(base_dir, file_patterns):
     return dataset
 
 
+# Create a generator
+rng = tf.random.Generator.from_seed(123, alg='philox')
+
+
 def preprocess_fn(data):
     """Parse the elements of the dataset"""
 
@@ -103,6 +107,9 @@ def preprocess_fn(data):
     text = features['text/string']
 
     image = preprocess_image(image)
+
+    seed = rng.make_seeds(2)[0]
+    image = augment_image(image, seed)
 
     return image, width, label, length, text
 
@@ -153,6 +160,14 @@ def preprocess_image(image):
     # first_row = tf.slice(image, [0, 0, 0], [1, -1, -1])
     # image = tf.concat([first_row, image], 0)
 
+    return image
+
+
+def augment_image(image, seed):
+    # Make a new seed
+    new_seed = tf.random.experimental.stateless_split(seed, num=1)[0, :]
+    image = tf.image.stateless_random_brightness(image, max_delta=0.5, seed=new_seed)
+    image = tf.image.stateless_random_contrast(image, lower=0.4, upper=0.6, seed=new_seed)
     return image
 
 
