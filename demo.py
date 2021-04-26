@@ -10,9 +10,9 @@ import numpy as np
 
 import config
 
-config.load_config('datasets/vr_plate/config.json')
+config.load_config('datasets/vr_plate/models/config.json')
 
-model_path = "datasets/vr_plate/checkpoint/last_inference_model.h5"
+model_path = "datasets/vr_plate/models/last_inference_model.h5"
 img_dir = ['/media/data_it/Data_set/database_image/card/vr/info/train/plate_new/3534_59F1-229.01.png',
            '/media/data_it/Data_set/database_image/card/vr/info/train/plate_new/3535_60F1-5857.png',
            '/media/data_it/Data_set/database_image/card/vr/info/train/plate_new/3536_59V1-173.33.png',

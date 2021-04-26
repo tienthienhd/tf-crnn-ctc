@@ -109,7 +109,8 @@ def preprocess_fn(data):
     image = preprocess_image(image)
 
     seed = rng.make_seeds(2)[0]
-    image = augment_image(image, seed)
+    if config.TrainingConfig.augment_data:
+        image = augment_image(image, seed)
 
     return image, width, label, length, text
 

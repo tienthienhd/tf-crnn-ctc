@@ -42,6 +42,7 @@ class HeadConfig:
 
 
 class TrainingConfig:
+    augment_data = False
     optimizer = 'adam'
     learning_rate = 0.001
     epochs = 10
@@ -79,6 +80,7 @@ def load_config(config_path: str):
     HeadConfig.classes = len(DatasetConfig.charset) + 1
 
     training_config = config['TrainingConfig']
+    TrainingConfig.augment_data = training_config['augment_data']
     TrainingConfig.optimizer = training_config['optimizer']
     TrainingConfig.learning_rate = training_config['learning_rate']
     TrainingConfig.epochs = training_config['epochs']

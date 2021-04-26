@@ -59,9 +59,10 @@
     "classes": -1
   },
   "TrainingConfig": {
+    "augment_data": false,
     "optimizer": "adam",
     "learning_rate": 0.001,
-    "epochs": 100,
+    "epochs": 200,
     "checkpoints": "",
     "batch_size": 64
   }
