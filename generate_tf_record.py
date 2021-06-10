@@ -69,10 +69,16 @@ def create_tf_record(image_dir: str, df_label: pd.DataFrame, characters: str, ou
             # print(f"Process {idx}: {filename}\t-\t{label}", end='\r')
             image_path = os.path.join(image_dir, filename)
             image = cv2.imread(image_path)
+            if image is None:
+                print(row)
             h, w, c = image.shape
             image_data = open(image_path, 'rb').read()
             # labels = char_to_num(tf.strings.unicode_split(label, input_encoding='UTF-8')).numpy().tolist()
-            labels = [characters.index(c) for c in label]
+            try:
+                labels = [characters.index(c) for c in label]
+            except Exception as e:
+                print(row)
+                raise e
             example = create_tf_example(filename, image_data, labels, label, h, w)
             shard_idx = idx % num_shards
             if example:
@@ -155,7 +161,8 @@ def float_list_feature(value):
 
 
 def main():
-    df_label = pd.read_csv(config.DatasetConfig.label_file, header=0, dtype={'filename': str, 'label': str})
+    df_label = pd.read_csv(config.DatasetConfig.label_file, header=0, dtype={'filename': str, 'label': str},
+                           keep_default_na=False, na_values=[''])
     test_size = config.DatasetConfig.test_size
     if test_size < 1:
         test_size = test_size * len(df_label)
@@ -174,7 +181,7 @@ def main():
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('--data', type=str, default="vr_plate")
+    parser.add_argument('--data', type=str, default="id_id")
     parser.add_argument('--cfg', type=str, default="config.json")
 
     args = parser.parse_args()

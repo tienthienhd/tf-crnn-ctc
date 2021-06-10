@@ -1,0 +1,49 @@
+{
+  "DatasetConfig": {
+    "data_name": "id_gen",
+    "image_dir": "/media/data_it/Data_set/database_image/card/id/info/id_gen",
+    "label_file": "/media/data_it/Data_set/database_image/card/id/info/id_gen.csv",
+    "work_dir": "/media/thiennt/projects/cv_end_to_end/training/ocr/crnn_ctc/datasets/id_id",
+    "data_dir": "annotations",
+    "train_file_patterns": [
+      "*_train.records*"
+    ],
+    "test_file_patterns": [
+      "*_test.records*"
+    ],
+    "height": 50,
+    "max_width": 800,
+    "depth": 1,
+    "charset": "0123456789",
+    "max_len": 12,
+    "test_size": 0.1
+  },
+  "CnnConfig": {
+    "type_model": "resnet_18"
+  },
+  "RnnConfig": {
+    "input_depth": 64,
+    "input_dropout": 0.2,
+    "layers": [
+      {
+        "units": 128,
+        "dropout": 0.25
+      },
+      {
+        "units": 64,
+        "dropout": 0.25
+      }
+    ]
+  },
+  "HeadConfig": {
+    "classes": -1
+  },
+  "TrainingConfig": {
+    "augment_data": false,
+    "optimizer": "adam",
+    "learning_rate": 0.001,
+    "epochs": 200,
+    "checkpoints": "",
+    "batch_size": 64
+  }
+}

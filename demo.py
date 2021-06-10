@@ -10,15 +10,18 @@ import numpy as np
 
 import config
 
-config.load_config('datasets/vr_plate/models/config.json')
+data_name = 'full_ocr'
 
-model_path = "datasets/vr_plate/models/last_inference_model.h5"
-img_dir = ['/media/data_it/Data_set/database_image/card/vr/info/train/plate_new/3534_59F1-229.01.png',
-           '/media/data_it/Data_set/database_image/card/vr/info/train/plate_new/3535_60F1-5857.png',
-           '/media/data_it/Data_set/database_image/card/vr/info/train/plate_new/3536_59V1-173.33.png',
-           '/media/data_it/Data_set/database_image/card/vr/info/train/plate_new/3537_29Y3-376.53.png',
-           '/media/data_it/Data_set/database_image/card/vr/info/train/plate_new/3538_29V7-374.72.png',
-           '/media/data_it/Data_set/database_image/card/vr/info/train/plate_new/3539_99K1-0841.png']
+config.load_config(f'datasets/{data_name}/models/config.json')
+
+model_path = f"datasets/{data_name}/models/last_inference_model.h5"
+img_dir = list(sorted(glob.glob('/media/data_it/Data_set/database_image/card/vr/info/train/address/*')))
+# img_dir = ['/media/data_it/Data_set/database_image/card/id/info/train/plate_new/3534_59F1-229.01.png',
+#            '/media/data_it/Data_set/database_image/card/vr/info/train/plate_new/3535_60F1-5857.png',
+#            '/media/data_it/Data_set/database_image/card/vr/info/train/plate_new/3536_59V1-173.33.png',
+#            '/media/data_it/Data_set/database_image/card/vr/info/train/plate_new/3537_29Y3-376.53.png',
+#            '/media/data_it/Data_set/database_image/card/vr/info/train/plate_new/3538_29V7-374.72.png',
+#            '/media/data_it/Data_set/database_image/card/vr/info/train/plate_new/3539_99K1-0841.png']
 model = load_model(model_path)
 
 characters = config.DatasetConfig.charset
@@ -37,7 +40,7 @@ def inference(img):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('--data', type=str, default='vr_plate')
+    parser.add_argument('--data', type=str, default='full_ocr')
     parser.add_argument('--cfg', type=str, default="config.json")
 
     args = parser.parse_args()
@@ -60,5 +63,6 @@ if __name__ == '__main__':
 
         img_ = img / 255.0 - 0.5
         pred = inference(img_)
+        print(pred)
         cv2.imshow(pred, img)
         cv2.waitKey(0)

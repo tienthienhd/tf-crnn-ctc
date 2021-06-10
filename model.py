@@ -1,5 +1,6 @@
 import tensorflow as tf
 import config
+from backbone.resnet import ResNet18
 from data_provider_tfrecord import get_data
 
 
@@ -26,13 +27,17 @@ class CTCLayer(tf.keras.layers.Layer):
 
 
 def get_cnn_feature(x):
-    for i, block in enumerate(config.CnnConfig.layers):
-        x = tf.keras.layers.Conv2D(filters=block['filter'], kernel_size=block['kernel_size'], padding=block['padding'],
-                                   strides=block['strides'], name=f'conv_{i}')(x)
-        x = tf.keras.layers.MaxPooling2D(block['pool_size'], padding=block['padding_pool'], name=f'max_pool_{i}')(x)
-        if block['batch_norm']:
-            x = tf.keras.layers.BatchNormalization(name=f'bn_{i}')(x)
-    return x
+    if config.CnnConfig.type_model == 'stack':
+        for i, block in enumerate(config.CnnConfig.layers):
+            x = tf.keras.layers.Conv2D(filters=block['filter'], kernel_size=block['kernel_size'], padding=block['padding'],
+                                       strides=block['strides'], name=f'conv_{i}')(x)
+            x = tf.keras.layers.MaxPooling2D(block['pool_size'], padding=block['padding_pool'], name=f'max_pool_{i}')(x)
+            if block['batch_norm']:
+                x = tf.keras.layers.BatchNormalization(name=f'bn_{i}')(x)
+        return x
+    elif config.CnnConfig.type_model == 'resnet_18':
+        model = ResNet18(x)
+        return model.output
 
 
 def get_rnn_feature(x):

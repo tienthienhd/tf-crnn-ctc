@@ -70,7 +70,7 @@ def load_config(config_path: str):
 
     cnn_config = config['CnnConfig']
     CnnConfig.type_model = cnn_config['type_model']
-    CnnConfig.layers = cnn_config['layers']
+    CnnConfig.layers = cnn_config.get('layers')
 
     rnn_config = config['RnnConfig']
     RnnConfig.input_depth = rnn_config['input_depth']
