@@ -1,8 +1,8 @@
 {
   "DatasetConfig": {
-    "data_name": "id_gen",
-    "image_dir": "/media/data_it/Data_set/database_image/card/id/info/id_gen",
-    "label_file": "/media/data_it/Data_set/database_image/card/id/info/id_gen.csv",
+    "data_name": "id",
+    "image_dir": "/media/data_it/Data_set/database_image/card/id/info/ID",
+    "label_file": "/media/data_it/Data_set/database_image/card/id/info/ID.csv",
     "work_dir": "/media/thiennt/projects/cv_end_to_end/training/ocr/crnn_ctc/datasets/id_id",
     "data_dir": "annotations",
     "train_file_patterns": [

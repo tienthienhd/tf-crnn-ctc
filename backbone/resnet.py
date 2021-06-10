@@ -53,13 +53,12 @@ def stack0(x, filters, blocks, stride1=(2, 1), name=None):
     return x
 
 
-def ResNet(stack_fn, preact, model_name='resnet', input_tensor=None,
+def ResNet(stack_fn, model_name='resnet', input_tensor=None,
            input_shape=None, **kwargs):
     """
     instantiates the ResNet, ResNetV2, and ResNeXt architecture
     Optionally loads weights pre-trained on ImageNet.
     :param stack_fn: a function that returns output tensor for the stacked residual blocks
-    :param preact: whether to use pre-activation or not (True for ResNetV2, False for ResNet and ResNeXt)
     :param model_name: string, model name
     :param input_tensor: optional Keras tensor (i.e. output of 'layers.Input()') to be use as image input for the model.
     :param input_shape: optional shape tuple, only to be specified
@@ -78,21 +77,18 @@ def ResNet(stack_fn, preact, model_name='resnet', input_tensor=None,
     else:
         img_input = input_tensor
     bn_axis = 3 if backend.image_data_format() == 'channels_last' else 1
-    x = layers.ZeroPadding2D(padding=((3, 3), (3, 3)), name='conv1_pad')(img_input)
-    x = layers.Conv2D(64, 7, strides=2, name='conv1_conv')(x)
+    x = layers.Conv2D(32, 3, strides=1, padding='same', name='conv1_1_conv')(img_input)
+    x = layers.BatchNormalization(axis=bn_axis, epsilon=1.001e-5, name='conv1_1_bn')(x)
+    x = layers.Activation('relu', name='conv1_1_relu')(x)
 
-    if preact is False:
-        x = layers.BatchNormalization(axis=bn_axis, epsilon=1.001e-5, name='conv1_bn')(x)
-        x = layers.Activation('relu', name='conv1_relu')(x)
-
-    x = layers.ZeroPadding2D(padding=((1, 1), (1, 1)), name='pool1_pad')(x)
-    x = layers.MaxPooling2D(3, strides=2, name='pool1_pool')(x)
+    x = layers.Conv2D(64, 3, strides=1, padding='same', name='conv1_2_conv')(x)
+    x = layers.BatchNormalization(axis=bn_axis, epsilon=1.001e-5, name='conv1_2_bn')(x)
+    x = layers.Activation('relu', name='conv1_2_relu')(x)
+    x = layers.MaxPooling2D(3, strides=2, padding='same', name='pool1_pool')(x)
 
     x = stack_fn(x)
 
-    if preact is True:
-        x = layers.BatchNormalization(axis=bn_axis, epsilon=1.001e-5, name='post_bn')(x)
-        x = layers.Activation('relu', name='post_relu')(x)
+    x = layers.MaxPooling2D(2, strides=2, padding='valid')(x)
 
     # Create Model
     model = models.Model(img_input, x, name=model_name)
