@@ -77,6 +77,7 @@ if __name__ == "__main__":
     dataset = get_data('test')
     img, lb, predict = load_model_from_dataset(dataset)
     acc = eval_model(lb, predict)
+    print(acc)
     check_wrong_img(img, lb, predict)
 
 
