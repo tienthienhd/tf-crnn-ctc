@@ -48,23 +48,15 @@ def decode_img(predict: list, label: list):
     for i, c in enumerate(vocab):
         char2idx[c] = i
         idx2char[i] = c
-    # print(idx2char)
     input_len = np.ones(predict.shape[0]) * predict.shape[1]
     result = keras.backend.ctc_decode(predict, input_length=input_len, greedy=True)[0][0][:, :max_len]
-    # print(result)
     result = decode_text(list(result.numpy()[0]), idx2char)
-    # print(label)
-    # print(result)
     label = decode_text(label, idx2char)
     return result, label
 
 
 def predict_model(model, img, label):
-    h,w = img.shape
-    img = img / 255.0
-    img = img.reshape((1, h, w))
-    img = expand_dims(img, axis=-1)
-    print(img.shape)
+    img = preprocessing_data(img)
     predict = model.predict(img)
     predict, lb = decode_img(predict, label)
     return predict, lb
@@ -85,8 +77,12 @@ def add_padding(img, img_h, img_w):
     return result
 
 
-def preprocessing_data(img, h, w):
+def preprocessing_data(img):
+    h, w, c = img.shape
     img = add_padding(img, h, w)
+    img = img / 255.0
+    img = img.reshape((1, h, w))
+    img = expand_dims(img, axis=-1)
     return img
 
 
@@ -94,11 +90,10 @@ def load_model_from_dataset(dataset):
     model = load_model(path_best_model)
     list_image, list_label, list_predict = [], [], []
     for data in dataset.as_numpy_iterator():
-        batch, height, width, depth = data['image'].shape
         image = (np.array(data['image'][0]) + 0.5) * 255.0
         image = image.astype(np.uint8)
         label = list(data['label'][0])
-        image = preprocessing_data(image, height, width)
+        # image = preprocessing_data(image, height, width)
         predict_text, label_text = predict_model(model, image, label)
         list_image.append(image)
         list_label.append(label_text)
