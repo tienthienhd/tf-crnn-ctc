@@ -1,11 +1,12 @@
-from tensorflow import keras
+import argparse
 import os
 import config
 import numpy as np
-from data_provider_tfrecord import get_data
 import cv2
-from numpy import expand_dims
-import tensorflow as tf
+from tensorflow import keras
+from data_provider_tfrecord import get_data
+from itertools import chain
+from asrtoolkit import cer, wer
 
 
 def load_model(path):
@@ -13,7 +14,7 @@ def load_model(path):
     return model
 
 
-def eval_model(label: list, predict: list) -> float:
+def eval_model_words(label: list, predict: list) -> float:
     count = 0
     total = len(label)
     for idx in range(total):
@@ -21,6 +22,14 @@ def eval_model(label: list, predict: list) -> float:
             count += 1
     acc = round(count / total, 2) * 100
     return acc
+
+def eval_model_character(orig_texts, predict):
+    cer_ = 0
+    for idx in range(len(predict)):
+        cer_i = cer(orig_texts[idx], predict[idx])
+        t = cer_i / 100
+        cer_ += t
+    return round((1-cer_/len(orig_texts))*100, 2)
 
 
 def check_wrong_img(img: list, label: list, predict: list):
@@ -40,7 +49,7 @@ def decode_text(indices, idx2char, check=True):
     return "".join(chars)
 
 
-def decode_img(predict: list, label: list):
+def decode_img(predict, label):
     vocab = config.DatasetConfig.charset
     max_len = config.DatasetConfig.max_len
     char2idx = {}
@@ -50,50 +59,26 @@ def decode_img(predict: list, label: list):
         idx2char[i] = c
     input_len = np.ones(predict.shape[0]) * predict.shape[1]
     result = keras.backend.ctc_decode(predict, input_length=input_len, greedy=True)[0][0][:, :max_len]
-    result = decode_text(list(result.numpy()[0]), idx2char)
-    label = decode_text(label, idx2char)
+    label = [decode_text(lb.tolist(), idx2char) for lb in label]
+    result = [decode_text(list(rlt.numpy()), idx2char) for rlt in result]
     return result, label
 
 
 def predict_model(model, img, label):
-    img = preprocessing_data(img)
+    # img = preprocessing_data(img)
     predict = model.predict(img)
     predict, lb = decode_img(predict, label)
     return predict, lb
 
 
-def add_padding(img, img_h, img_w):
-    img = img
-    hh, ww, cc = img.shape
-    try:
-        rate = ww / hh
-        img = cv2.resize(img, (round(rate * img_h), img_h),
-                         interpolation=cv2.INTER_AREA)
-        color = (0, 0, 0)
-        result = np.full((img_h, img_w, cc), color, dtype=np.uint8)
-        result[:img_h, :round(rate * img_h)] = img
-    except:
-        result = cv2.resize(img, (img_w, img_h))
-    return result
-
-
-def preprocessing_data(img):
-    h, w, c = img.shape
-    img = add_padding(img, h, w)
-    img = img / 255.0
-    img = img.reshape((1, h, w))
-    img = expand_dims(img, axis=-1)
-    return img
-
-
 def load_model_from_dataset(dataset):
     model = load_model(path_best_model)
     list_image, list_label, list_predict = [], [], []
+    i = 0
     for data in dataset.as_numpy_iterator():
-        image = (np.array(data['image'][0]) + 0.5) * 255.0
-        image = image.astype(np.uint8)
-        label = list(data['label'][0])
-        # image = preprocessing_data(image, height, width)
+        i += 1
+        image = data['image']
+        label = data['label']
         predict_text, label_text = predict_model(model, image, label)
         list_image.append(image)
         list_label.append(label_text)
@@ -102,10 +87,24 @@ def load_model_from_dataset(dataset):
 
 
 if __name__ == "__main__":
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--data", type=str, default="id_id")
+    parser.add_argument("--cfg", type=str, default="config.json")
+    args = parser.parse_args()
+    if args.cfg != 'config.json':
+        cfg = args.cfg
+    else:
+        cfg = os.path.join(f'./datasets/{args.data}/models/config.json')
+    config.load_config(cfg)
     path_best_model = os.path.join(config.TrainingConfig.checkpoints, 'last_inference_model.h5')
     dataset = get_data('test')
     img, lb, predict = load_model_from_dataset(dataset)
-    acc = eval_model(lb, predict)
-    print(f"label: {lb}\n predict: {predict}")
-    print(f"Accuracy words: {acc}%")
+    lb = list(chain.from_iterable(lb))
+    predict = list(chain.from_iterable(predict))
+    acc_w = eval_model_words(lb, predict)
+    acc_c = eval_model_character(lb, predict)
+    print(f"label: {lb}\n predict: {predict}\n {len(lb)}")
+    print(f"Accuracy words: {acc_w}%")
+    print(f"Accuracy character: {acc_c}%")
     # check_wrong_img(img, lb, predict)
+
