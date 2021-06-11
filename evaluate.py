@@ -53,19 +53,20 @@ def decode_img(predict, label):
     return result, label
 
 
-def predict_model(img, label):
-    predict = load_model(path_best_model).predict(img)
+def predict_model(model, img, label):
+    predict = model.predict(img)
     predict = decode_img(predict, label)
     return predict
 
 
 def load_model_from_dataset(dataset):
+    model = load_model(path_best_model)
     list_image, list_label, list_predict = [], [], []
     for data in dataset.as_numpy_iterator():
         image = (np.array(data['image'][0]) + 0.5) * 255.0
         image = image.astype(np.uint8)
         label = data['label'][0]
-        predict_text, label_text = predict_model(image, label)
+        predict_text, label_text = predict_model(model, image, label)
         list_image.append(image)
         list_label.append(label_text)
         list_predict.append(predict_text)
