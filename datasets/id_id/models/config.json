@@ -6,10 +6,10 @@
     "work_dir": "/media/thiennt/projects/cv_end_to_end/training/ocr/crnn_ctc/datasets/id_id",
     "data_dir": "annotations",
     "train_file_patterns": [
-      "*_train.records*"
+      "id_train.records*"
     ],
     "test_file_patterns": [
-      "*_test.records*"
+      "id_test.records*"
     ],
     "height": 50,
     "max_width": 800,
@@ -19,7 +19,45 @@
     "test_size": 0.1
   },
   "CnnConfig": {
-    "type_model": "resnet_18"
+    "type_model": "stack",
+    "layers": [
+      {
+        "filter": 32,
+        "kernel_size": 3,
+        "padding": "same",
+        "strides": 1,
+        "pool_size": [2, 1],
+        "padding_pool": "valid",
+        "batch_norm": true
+      },
+      {
+        "filter": 64,
+        "kernel_size": 3,
+        "padding": "same",
+        "strides": 1,
+        "pool_size": 2,
+        "padding_pool": "valid",
+        "batch_norm": true
+      },
+      {
+        "filter": 128,
+        "kernel_size": 3,
+        "padding": "same",
+        "strides": 1,
+        "pool_size": 2,
+        "padding_pool": "valid",
+        "batch_norm": true
+      },
+      {
+        "filter": 256,
+        "kernel_size": 3,
+        "padding": "same",
+        "strides": 1,
+        "pool_size": [2, 1],
+        "padding_pool": "valid",
+        "batch_norm": true
+      }
+    ]
   },
   "RnnConfig": {
     "input_depth": 64,
