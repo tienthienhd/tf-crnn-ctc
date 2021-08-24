@@ -1,18 +1,38 @@
+import os.path
 import random
+import time
 
-def gen_captcha_key() -> str:
-    raw = list('xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx')
-    for i, c in enumerate(raw):
-        if c == 'x' or c == 'y':
-            r = random.randint(0, 16) | 0
-            if c == 'x':
-                 v = r
-            else:
-                v = r & 0x3 | 0x8
-            raw[i] = hex(v)[2:]
+import js2py
+import requests
 
-    result = ''.join(raw).replace('-', '')
-    return result
+generate_captcha_key = js2py.eval_js(
+    "function generate_captcha_key() {	return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {		var r = Math.random()*16|0, v = c == 'x' ? r : (r&0x3|0x8);		return v.toString(16);	}).replace(/-/g,'');}")
+
+proxies = {
+    "http": '172.16.10.111:18118',
+    "https": '172.16.10.111:18118'
+}
 
 
-url = f'https://gop.captcha.garena.com/image?key={gen_captcha_key()}'
+def download_captcha_image(output_path):
+    url = f'https://gop.captcha.garena.com/image?key={generate_captcha_key()}'
+    print(url)
+    res = requests.get(url, proxies=proxies)
+    content = res.content
+
+    if len(content) < 500:
+        return False
+
+    with open(output_path, 'wb') as f:
+        f.write(content)
+    return True
+
+
+output_dir = '/media/data_it/Data_set/database_image/ocr/captcha/garena'
+n = 5000
+for i in range(n):
+    filepath = os.path.join(output_dir, f'{i:0>5}.jpg')
+    if os.path.exists(filepath):
+        continue
+    res = download_captcha_image(filepath)
+    print(f'Download {i}: {res}')

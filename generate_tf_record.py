@@ -42,6 +42,17 @@ def create_tf_record(image_dir: str, df_label: pd.DataFrame, characters: str, ou
     print(f'Number of Example: {df_label.shape[0]}')
     print(f'Output {num_shards} file: {output_path}')
     print(f'Charset: {characters}')
+
+    char_statistic = {}
+    for c in characters:
+        char_statistic[c] = 0
+    all_labels = df_label['label'].tolist()
+    for label in all_labels:
+        for c in label:
+            char_statistic[c] += 1
+    char_statistic = {k: v for k, v in sorted(char_statistic.items(), key=lambda item: item[1])}
+
+    print(f'Charset statistic: {char_statistic}')
     print('===========================================================================')
 
     with contextlib2.ExitStack() as tf_record_close_stack:

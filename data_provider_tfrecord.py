@@ -43,8 +43,9 @@ def get_data(data: str = 'train') -> tf.data.Dataset:
                                    },
                                    padding_values={
                                        'image': 0.0,
-                                       'label': len(config.DatasetConfig.charset) + 1
+                                       'label': len(config.DatasetConfig.charset)
                                    })
+    # dataset = dataset.batch(config.TrainingConfig.batch_size)
 
     return dataset
 
@@ -173,9 +174,8 @@ def augment_image(image, seed):
 
 
 if __name__ == '__main__':
-    base_dir = '/media/thiennt/projects/cv_end_to_end/training/ocr/crnn_ctc/datasets/vr_plate'
-    type_data = 'train'
-    file_patterns = [f'*{type_data}.records*']
+    data_name = 'garena_captcha'
+    config.load_config(f'./datasets/{data_name}/models/config.json')
     dataset = get_data('test')
     print(dataset)
 

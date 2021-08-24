@@ -40,8 +40,8 @@ def run():
             initial_epoch = meta['epochs']
 
     callbacks = [
-        tf.keras.callbacks.EarlyStopping(patience=5),
-        tf.keras.callbacks.TensorBoard(config.TrainingConfig.checkpoints, update_freq='batch'),
+        # tf.keras.callbacks.EarlyStopping(patience=5),
+        # tf.keras.callbacks.TensorBoard(config.TrainingConfig.checkpoints, update_freq='batch'),
         ModelCheckpointCallback(best_model_path, meta_file, save_best_only=True)
     ]
 

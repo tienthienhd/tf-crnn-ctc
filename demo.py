@@ -10,12 +10,12 @@ import numpy as np
 
 import config
 
-data_name = 'id_id'
+data_name = 'garena_captcha'
 
 config.load_config(f'datasets/{data_name}/models/config.json')
 
 model_path = f"datasets/{data_name}/models/last_inference_model.h5"
-img_dir = list(sorted(glob.glob('/media/data_it/Data_set/database_image/card/id/words/ID/*')))
+img_dir = list(sorted(glob.glob('/media/data_it/Data_set/database_image/ocr/captcha/garena/*'), reverse=True))
 # img_dir = ['/media/data_it/Data_set/database_image/card/id/info/train/plate_new/3534_59F1-229.01.png',
 #            '/media/data_it/Data_set/database_image/card/vr/info/train/plate_new/3535_60F1-5857.png',
 #            '/media/data_it/Data_set/database_image/card/vr/info/train/plate_new/3536_59V1-173.33.png',
@@ -40,7 +40,7 @@ def inference(img):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('--data', type=str, default='id_id')
+    parser.add_argument('--data', type=str, default='garena_captcha')
     parser.add_argument('--cfg', type=str, default="config.json")
 
     args = parser.parse_args()
@@ -52,7 +52,7 @@ if __name__ == '__main__':
 
     config.load_config(cfg)
     for file in img_dir:
-        img = cv2.imread(file, cv2.IMREAD_UNCHANGED)
+        img = cv2.imread(file, cv2.IMREAD_COLOR)
         h, w, c = img.shape
         new_h = config.DatasetConfig.height
         w = int(w * new_h / h)
@@ -63,6 +63,7 @@ if __name__ == '__main__':
 
         img_ = img / 255.0 - 0.5
         pred = inference(img_)
-        print(pred)
+
+        print(f'{file}: {pred}')
         cv2.imshow(pred, img)
         cv2.waitKey(0)
