@@ -71,7 +71,7 @@
     "augment_data": false,
     "optimizer": "adam",
     "learning_rate": 0.0001,
-    "epochs": 220,
+    "epochs": 240,
     "checkpoints": "",
     "batch_size": 32
   }
