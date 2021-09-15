@@ -1,5 +1,6 @@
 import argparse
 import os
+import sys
 
 import contextlib2
 import cv2
@@ -49,6 +50,8 @@ def create_tf_record(image_dir: str, df_label: pd.DataFrame, characters: str, ou
     all_labels = df_label['label'].tolist()
     for label in all_labels:
         for c in label:
+            if c not in char_statistic:
+                print(f"Error: {label}", file=sys.stderr)
             char_statistic[c] += 1
     char_statistic = {k: v for k, v in sorted(char_statistic.items(), key=lambda item: item[1])}
 
