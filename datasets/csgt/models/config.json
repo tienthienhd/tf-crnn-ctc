@@ -1,0 +1,78 @@
+{
+  "DatasetConfig": {
+    "data_name": "csgt",
+    "image_dir": "/media/thiennt/projects/mine/cv_end_to_end/training/ocr/crnn_ctc/datasets/csgt/train",
+    "label_file": "/media/thiennt/projects/mine/cv_end_to_end/training/ocr/crnn_ctc/datasets/csgt/train_1.csv",
+    "work_dir": "/media/thiennt/projects/mine/cv_end_to_end/training/ocr/crnn_ctc/datasets/csgt",
+    "data_dir": "annotations",
+    "train_file_patterns": [
+      "*_train.records*"
+    ],
+    "test_file_patterns": [
+      "*_test.records*"
+    ],
+    "height": 22,
+    "max_width": 100,
+    "depth": 1,
+    "charset": "23456789bcdfghjkmnpqrstvwxyz",
+    "max_len": 12,
+    "test_size": 0.05
+  },
+  "CnnConfig": {
+    "type_model": "stack",
+    "layers": [
+      {
+        "filter": 32,
+        "kernel_size": 3,
+        "padding": "same",
+        "strides": 1,
+        "pool_size": 2,
+        "padding_pool": "valid",
+        "batch_norm": true
+      },
+      {
+        "filter": 64,
+        "kernel_size": 3,
+        "padding": "same",
+        "strides": 1,
+        "pool_size": 2,
+        "padding_pool": "valid",
+        "batch_norm": true
+      },
+      {
+        "filter": 128,
+        "kernel_size": 3,
+        "padding": "same",
+        "strides": 1,
+        "pool_size": 2,
+        "padding_pool": "valid",
+        "batch_norm": true
+      }
+    ]
+  },
+  "RnnConfig": {
+    "input_depth": 64,
+    "input_dropout": 0.2,
+    "layers": [
+      {
+        "units": 128,
+        "dropout": 0.25
+      },
+      {
+        "units": 64,
+        "dropout": 0.25
+      }
+    ]
+  },
+  "HeadConfig": {
+    "classes": -1
+  },
+  "TrainingConfig": {
+    "augment_data": false,
+    "optimizer": "adam",
+    "learning_rate": 0.0001,
+    "epochs": 240,
+    "checkpoints": "",
+    "batch_size": 4
+  }
+}

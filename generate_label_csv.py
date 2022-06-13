@@ -4,12 +4,13 @@ import os
 
 import pandas as pd
 
-image_dir = '/media/data_it/Data_set/database_image/ocr/captcha/garena'
+image_dir = '/media/thiennt/projects/mine/cv_end_to_end/training/ocr/crnn_ctc/datasets/gplx/train'
 
 filenames = os.listdir(image_dir)
 
 filenames = sorted(filenames)
-
+# labels = [f.split('.')[0].split('_')[-1] for f in filenames]
+#
 labels = [""] * len(filenames)
 
 df = pd.DataFrame({

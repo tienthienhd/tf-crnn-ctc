@@ -174,7 +174,7 @@ def augment_image(image, seed):
 
 
 if __name__ == '__main__':
-    data_name = 'garena_captcha'
+    data_name = 'csgt'
     config.load_config(f'./datasets/{data_name}/models/config.json')
     dataset = get_data('test')
     print(dataset)

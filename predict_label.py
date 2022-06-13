@@ -26,6 +26,7 @@ def inference(model, img, characters):
 
 def get_label(file_path, model, characters):
     img = cv2.imread(file_path, cv2.IMREAD_GRAYSCALE)
+    img = cv2.resize(img, (121, 65))
     img = np.expand_dims(img, axis=-1)
     img_ = img / 255.0 - 0.5
     pred = inference(model, img_, characters)
@@ -37,7 +38,7 @@ def run(data_name, image_dir, label_file, output_file, start, end):
     model = load_model(model_path)
     characters = config.DatasetConfig.charset
 
-    df_label = pd.read_csv(label_file)
+    df_label = pd.read_csv(label_file, dtype={'label': str})
 
     df_label['filepath'] = df_label['filename'].apply(lambda x: os.path.join(image_dir, x))
     df_label['label'].iloc[start: end] = df_label['filepath'].iloc[start: end].apply(

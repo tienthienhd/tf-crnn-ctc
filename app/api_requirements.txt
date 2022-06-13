@@ -2,3 +2,5 @@ tensorflow
 opencv_contrib_python==4.1.2.30
 numpy
 python-multipart
+py-eureka-client
+Pillow

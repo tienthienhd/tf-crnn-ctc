@@ -6,10 +6,12 @@ import requests
 from PIL import Image
 from io import BytesIO
 import os
-import demo
 
-url = "http://ag.sgd168.com/VerifyCode.aspx?AspxAutoDetectCookieSupport=1"
-img_dir = "/media/data_it/thiennt/cv_end_to_end/training/ocr/crnn_ctc/datasets/ag_sgd168/test"
+# import demo
+# from paddleocr import PaddleOCR
+
+url = "https://gplx.gov.vn/api/Common/Captcha/getCaptcha?returnType=image&site=2005782&width=150&height=50&t=1654842005506"
+img_dir = "/media/thiennt/projects/mine/cv_end_to_end/training/ocr/crnn_ctc/datasets/gplx/train"
 
 
 def preprocess(img):
@@ -22,7 +24,7 @@ def preprocess(img):
 
 
 def read(img):
-    # img_ = preprocess(img)
+    img_ = preprocess(img)
     img_ = img
     try:
         text = pytesseract.image_to_string(img_, lang='eng', config="--oem 3 --psm 8")
@@ -39,16 +41,57 @@ def pretrained_read(img):
     return pred
 
 
+# ocr = PaddleOCR(use_angle_cls=False, lang='en')  # need to run only once to download and load model into memory
+
+
+def read_paddle_ocr(img):
+    result = ocr.ocr(img, det=True, cls=False)
+    for line in result:
+        return line[1][0]
+
+
 def download(n_samples):
-    start_id = 0
+    start_id = 3001
     for i in range(start_id, n_samples):
-        response = requests.get(url, headers={"User-Agent": "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:79.0) Gecko/20100101 Firefox/79.0", "Cookie": "Cookie: AspxAutoDetectCookieSupport=1; ASP.NET_SessionId=hmdzv145kr2zlcz4nlkhck45; No.VerifyCode=CcrRKz0St9eGBkgbSx/faQ=="}, verify=False)
+        cookies = {
+            'D1N': 'a17381a39fc923b9f218ed844db436b2',
+            'be': '160',
+            'AUTH_BEARER_default': 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJpYXQiOjE2NTUxMDEzMDEsImp0aSI6Ik52Ym9sOW55bFRCR0xJUTdmUkZXdXFzRmg4NXdYbEtKeFZ2K1E1S29RYUU9IiwiaXNzIjoiZ3BseC5nb3Yudm4iLCJuYmYiOjE2NTUxMDEzMDEsImV4cCI6MTY1NTEwNDkwMSwiZGF0YSI6ImNzcmZUb2tlbnxzOjY0OlwiYzg1MmQ0NjgzZjZlZDE4ZDYwZDM3NDk1NWI2ZWFmNjQwNDI5MjViM2JkZWVmMGU3Nzg5NzM0MTUxMDdiNzA4N1wiO2d1ZXN0SWR8czozMjpcImEzYTM5NTYyYTdmNmM0NWZiNTM1NmM4OGQxY2QwYTAwXCI7dmlzaXRlZDIwMDU3ODJ8aToxOyJ9.JvxpBPObjFov4NZNIqW5fjJ_NsbLSYblRQPgJoCpVFPsACceMOMLr6wKUOQ_Wzm-M-0BAEnfGyI3EqVcuSS9Ow',
+        }
+
+        headers = {
+            'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9',
+            'Accept-Language': 'vi-VN,vi;q=0.9,en-US;q=0.8,en;q=0.7,fr-FR;q=0.6,fr;q=0.5',
+            'Cache-Control': 'max-age=0',
+            'Connection': 'keep-alive',
+            # Requests sorts cookies= alphabetically
+            # 'Cookie': 'D1N=940bb901b1d42ebedf7a7bf2c1bb427c; be=160; AUTH_BEARER_default=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJpYXQiOjE2NTQ4MzY4NDcsImp0aSI6Ikl4dU5seFhmeFNXdnpNbis3UWwrbGhxbGdoVVlMd1wvMWQ1eE1iV2Z1THNNPSIsImlzcyI6ImdwbHguZ292LnZuIiwibmJmIjoxNjU0ODM2ODQ3LCJleHAiOjE2NTQ4NDA0NDcsImRhdGEiOiJjc3JmVG9rZW58czo2NDpcIjNlNWI3ZmFmZTI1OTdlNTViZTgwZDIyYjA1NWExNzExYmU5MzRjNzYxMTQ0OGFiMDc3YzE4MWY3NTAzNDE2ODhcIjtndWVzdElkfHM6MzI6XCI2ZDYyNmEyNTNmYjM4MzJlODI5NjFmZTg2NTQzZWMxMVwiO3Zpc2l0ZWQyMDA1NzgyfGk6MTsifQ.gXfLhysuUXQ9c6V0qWK07cKS8pN0vIDszQp44lfTpvkg88AmYEJuc6M5HdGsvKKQ9uoox6Gnk9qzC_oMeMO3Bw',
+            'Sec-Fetch-Dest': 'document',
+            'Sec-Fetch-Mode': 'navigate',
+            'Sec-Fetch-Site': 'none',
+            'Sec-Fetch-User': '?1',
+            'Upgrade-Insecure-Requests': '1',
+            'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/102.0.5005.61 Safari/537.36',
+            'sec-ch-ua': '" Not A;Brand";v="99", "Chromium";v="102", "Google Chrome";v="102"',
+            'sec-ch-ua-mobile': '?0',
+            'sec-ch-ua-platform': '"Linux"',
+        }
+        response = requests.get(url,
+                                headers=headers, cookies=cookies,
+                                verify=False)
+        # print(response.status_code)
+        # print(response.content)
         img = Image.open(BytesIO(response.content))
         img = np.array(img)[:, :, :3]
-        label = pretrained_read(img)
+        label = ""
+        # label = pretrained_read(img)
+        # label = read_paddle_ocr(img)
+        # label = read(img)
+
         filename = "{:05}_{}.png".format(i, label)
         cv2.imwrite(os.path.join(img_dir, filename), img)
+        # img.save(os.path.join(img_dir, filename))
 
 
 if __name__ == '__main__':
-    download(200)
+    download(3100)

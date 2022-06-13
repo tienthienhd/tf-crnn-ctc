@@ -2,7 +2,7 @@ import argparse
 import os
 import sys
 
-import contextlib2
+import contextlib
 import cv2
 import pandas as pd
 import tensorflow as tf
@@ -58,7 +58,7 @@ def create_tf_record(image_dir: str, df_label: pd.DataFrame, characters: str, ou
     print(f'Charset statistic: {char_statistic}')
     print('===========================================================================')
 
-    with contextlib2.ExitStack() as tf_record_close_stack:
+    with contextlib.ExitStack() as tf_record_close_stack:
         output_tfrecords = open_sharded_output_tfrecords(tf_record_close_stack, output_path, num_shards)
 
         # # Mapping characters to integers
@@ -195,7 +195,7 @@ def main():
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('--data', type=str, default="id_id")
+    parser.add_argument('--data', type=str, default="gplx")
     parser.add_argument('--cfg', type=str, default="config.json")
 
     args = parser.parse_args()

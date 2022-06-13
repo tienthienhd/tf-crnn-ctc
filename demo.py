@@ -10,12 +10,12 @@ import numpy as np
 
 import config
 
-data_name = 'garena_captcha'
+data_name = 'gplx'
 
 config.load_config(f'datasets/{data_name}/models/config.json')
 
 model_path = f"datasets/{data_name}/models/last_inference_model.h5"
-img_dir = list(sorted(glob.glob('/media/data_it/Data_set/database_image/ocr/captcha/garena/*'), reverse=True))
+img_dir = list(sorted(glob.glob(config.DatasetConfig.image_dir + '/029*'), reverse=True))
 # img_dir = ['/media/data_it/Data_set/database_image/card/id/info/train/plate_new/3534_59F1-229.01.png',
 #            '/media/data_it/Data_set/database_image/card/vr/info/train/plate_new/3535_60F1-5857.png',
 #            '/media/data_it/Data_set/database_image/card/vr/info/train/plate_new/3536_59V1-173.33.png',
@@ -40,7 +40,7 @@ def inference(img):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('--data', type=str, default='garena_captcha')
+    parser.add_argument('--data', type=str, default='gplx')
     parser.add_argument('--cfg', type=str, default="config.json")
 
     args = parser.parse_args()

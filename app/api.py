@@ -1,3 +1,5 @@
+import base64
+import io
 import os
 from typing import List
 
@@ -5,7 +7,9 @@ import cv2
 import numpy as np
 import tensorflow.keras.backend as K
 import uvicorn
+from PIL import Image
 from fastapi import FastAPI, UploadFile, File, HTTPException
+from pydantic import BaseModel
 from starlette.responses import RedirectResponse
 from tensorflow.keras.models import load_model
 
@@ -20,7 +24,14 @@ app = FastAPI(
     description="OCR",
     openapi_prefix=prefix,
 )
-model_names = ['garena', 'zalo']
+
+import py_eureka_client.eureka_client as eureka_client
+
+eureka_client.init(eureka_server="http://172.16.10.111:8761/eureka/,http://172.16.20.67:8761/eureka/",
+                   app_name="captcha-ocr",
+                   instance_port=15000)
+
+model_names = ['garena', 'zalo', 'vietcombank', 'csgt', 'gplx']
 
 model_inferences = {}
 configs = {}
@@ -67,6 +78,13 @@ async def file_to_image(file):
     return img
 
 
+async def base64_to_image(img_str):
+    imgdata = base64.b64decode(str(img_str))
+    img = Image.open(io.BytesIO(imgdata))
+    opencv_img = cv2.cvtColor(np.array(img), cv2.COLOR_BGR2RGB)
+    return opencv_img
+
+
 @app.get("/", include_in_schema=False)
 def docs_redirect():
     return RedirectResponse(f"{prefix}/docs")
@@ -77,6 +95,19 @@ async def ocr_captcha_route(model_name: str, files: UploadFile = File(...)):
     if model_name not in model_names:
         return HTTPException(status_code=400, detail="Model not implemented")
     image = await file_to_image(files)
+    result = predict(model_name, image)
+    return RecordBaseResponse(result=result)
+
+
+class ImageStr(BaseModel):
+    image: str
+
+
+@app.post("/api/v1/captcha/{model_name}/base64", response_model=RecordBaseResponse, tags=['captcha'])
+async def ocr_captcha_route(model_name: str, image: ImageStr):
+    if model_name not in model_names:
+        return HTTPException(status_code=400, detail="Model not implemented")
+    image = await base64_to_image(image.image)
     result = predict(model_name, image)
     return RecordBaseResponse(result=result)
 
