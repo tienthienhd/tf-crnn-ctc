@@ -153,7 +153,7 @@ def preprocess_image(image):
 
     # Rescale from uint8([0,255]) to float([-0.5,0.5])
     image = tf.image.convert_image_dtype(image, tf.float32)
-    image = tf.subtract(image, 0.5)
+#     image = tf.subtract(image, 0.5)
 
     image = tf.image.resize(image, [config.DatasetConfig.height, config.DatasetConfig.max_width],
                             preserve_aspect_ratio=True)
