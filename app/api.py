@@ -49,7 +49,7 @@ async def load_config():
             "normalize": config.DatasetConfig.normalize
         }
 
-    if False:
+    if True:
         import py_eureka_client.eureka_client as eureka_client
 
         await eureka_client.init_async(eureka_server="http://172.16.10.111:8761/eureka/,http://172.16.20.67:8761/eureka/",
