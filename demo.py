@@ -7,14 +7,14 @@ from tensorflow.keras.models import load_model
 import tensorflow.keras.backend as K
 import string
 import numpy as np
-
+from model import CTCLayer
 import config
 
-data_name = 'gplx'
+data_name = 'gplx_numgber_id'
 
 config.load_config(f'datasets/{data_name}/models/config.json')
 
-model_path = f"datasets/{data_name}/models/last_inference_model.h5"
+model_path = f"datasets/{data_name}/models/best_train_model.h5"
 img_dir = list(sorted(glob.glob(config.DatasetConfig.image_dir + '/029*'), reverse=True))
 # img_dir = ['/media/data_it/Data_set/database_image/card/id/info/train/plate_new/3534_59F1-229.01.png',
 #            '/media/data_it/Data_set/database_image/card/vr/info/train/plate_new/3535_60F1-5857.png',
@@ -40,7 +40,7 @@ def inference(img):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('--data', type=str, default='gplx')
+    parser.add_argument('--data', type=str, default='gplx_numgber_id')
     parser.add_argument('--cfg', type=str, default="config.json")
 
     args = parser.parse_args()
@@ -61,7 +61,7 @@ if __name__ == '__main__':
             img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
             img = np.expand_dims(img, axis=-1)
 
-        img_ = img / 255.0 - 0.5
+        img_ = img / 255.0
         pred = inference(img_)
 
         print(f'{file}: {pred}')

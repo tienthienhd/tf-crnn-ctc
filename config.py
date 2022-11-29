@@ -16,6 +16,7 @@ class DatasetConfig:
     charset = sorted('0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ.-')
     max_len = 11
     test_size = 0.0
+    normalize = True
 
 
 class CnnConfig:
@@ -67,6 +68,7 @@ def load_config(config_path: str):
     DatasetConfig.charset = sorted(data_config['charset'])
     DatasetConfig.max_len = data_config['max_len']
     DatasetConfig.test_size = data_config['test_size']
+    DatasetConfig.normalize = data_config.get('normalize', True)
 
     cnn_config = config['CnnConfig']
     CnnConfig.type_model = cnn_config['type_model']

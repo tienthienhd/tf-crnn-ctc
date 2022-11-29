@@ -38,7 +38,7 @@ def run():
         if os.path.exists(meta_file):
             meta = json.load(open(meta_file, 'r'))
             initial_epoch = meta['epochs']
-
+    # model.save(last_model_inference, include_optimizer=False)
     callbacks = [
         tf.keras.callbacks.EarlyStopping(patience=5),
         # tf.keras.callbacks.TensorBoard(config.TrainingConfig.checkpoints, update_freq='batch'),
@@ -68,7 +68,7 @@ def run():
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('--data', type=str, default='gplx')
+    parser.add_argument('--data', type=str, default='vietcombank')
     parser.add_argument('--cfg', type=str, default="config.json")
 
     args = parser.parse_args()

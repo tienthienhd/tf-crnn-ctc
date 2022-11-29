@@ -10,11 +10,12 @@ import uvicorn
 from PIL import Image
 from fastapi import FastAPI, UploadFile, File, HTTPException
 from pydantic import BaseModel
+from starlette.requests import Request
 from starlette.responses import RedirectResponse
 from tensorflow.keras.models import load_model
 
-from . import config
 from app.models import RecordBaseResponse, RecordsBaseResponse
+from . import config
 
 prefix = os.getenv("CLUSTER_ROUTE_PREFIX", "").rstrip("/")
 
@@ -25,20 +26,14 @@ app = FastAPI(
     openapi_prefix=prefix,
 )
 
-import py_eureka_client.eureka_client as eureka_client
-
-eureka_client.init(eureka_server="http://172.16.10.111:8761/eureka/,http://172.16.20.67:8761/eureka/",
-                   app_name="captcha-ocr",
-                   instance_port=15000)
-
-model_names = ['garena', 'zalo', 'vietcombank', 'csgt', 'gplx']
+model_names = ['garena', 'zalo', 'vietcombank', 'csgt', 'gplx', 'payoo_web']
 
 model_inferences = {}
 configs = {}
 
 
 @app.on_event('startup')
-def load_config():
+async def load_config():
     global model_inferences, configs
     dir_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "models")
     for name in model_names:
@@ -51,7 +46,21 @@ def load_config():
             "depth": config.DatasetConfig.depth,
             "max_len": config.DatasetConfig.max_len,
             "charset": config.DatasetConfig.charset,
+            "normalize": config.DatasetConfig.normalize
         }
+
+    if False:
+        import py_eureka_client.eureka_client as eureka_client
+
+        await eureka_client.init_async(eureka_server="http://172.16.10.111:8761/eureka/,http://172.16.20.67:8761/eureka/",
+                           app_name="captcha-ocr",
+                           instance_port=15000)
+
+
+@app.on_event("shutdown")
+async def shutdown_event():
+    import py_eureka_client.eureka_client as eureka_client
+    await eureka_client.stop_async()
 
 
 def predict(model_name, img):
@@ -62,7 +71,9 @@ def predict(model_name, img):
     if configs[model_name]['depth'] == 1:
         img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
         img = np.expand_dims(img, axis=-1)
-    img = img / 255.0 - 0.5
+    img = img / 255.0
+    if configs[model_name].get('normalize'):
+        img = img - 0.5
     x = np.expand_dims(img, axis=0)
     y_pred = model_inferences[model_name].predict(x)
     out = K.get_value(K.ctc_decode(y_pred, input_length=np.ones(y_pred.shape[0]) * y_pred.shape[1], )[0][0])[:,
@@ -122,6 +133,11 @@ async def ocr_captcha_multi_route(model_name: str, files: List[UploadFile] = Fil
         result = predict(model_name, image)
         results.append(result)
     return RecordsBaseResponse(result=results)
+
+
+@app.get('/health-check')
+async def health_check(request: Request) -> str:
+    return "Ok"
 
 
 if __name__ == '__main__':

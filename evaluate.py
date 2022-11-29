@@ -88,7 +88,7 @@ def load_model_from_dataset(dataset):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("--data", type=str, default="id_id")
+    parser.add_argument("--data", type=str, default="vietcombank")
     parser.add_argument("--cfg", type=str, default="config.json")
     args = parser.parse_args()
     if args.cfg != 'config.json':
