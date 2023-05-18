@@ -1,6 +1,6 @@
 import cv2
 import numpy as np
-import pytesseract
+# import pytesseract
 import traceback
 import requests
 from PIL import Image
@@ -10,8 +10,8 @@ import os
 # import demo
 # from paddleocr import PaddleOCR
 
-url = "https://gplx.gov.vn/api/Common/Captcha/getCaptcha?returnType=image&site=2005782&width=150&height=50&t=1654842005506"
-img_dir = "/media/thiennt/projects/mine/cv_end_to_end/training/ocr/crnn_ctc/datasets/gplx/train"
+url = "https://dichvucong.bocongan.gov.vn/captcha.php?act=create&t=1684377592487&for=maXacNhan"
+img_dir = "/Users/tienthien/workspace/mine/tf-crnn-ctc/datasets/dichvucong/test"
 
 
 def preprocess(img):
@@ -51,12 +51,10 @@ def read_paddle_ocr(img):
 
 
 def download(n_samples):
-    start_id = 3001
+    start_id = 0
+
     for i in range(start_id, n_samples):
         cookies = {
-            'D1N': 'a17381a39fc923b9f218ed844db436b2',
-            'be': '160',
-            'AUTH_BEARER_default': 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJpYXQiOjE2NTUxMDEzMDEsImp0aSI6Ik52Ym9sOW55bFRCR0xJUTdmUkZXdXFzRmg4NXdYbEtKeFZ2K1E1S29RYUU9IiwiaXNzIjoiZ3BseC5nb3Yudm4iLCJuYmYiOjE2NTUxMDEzMDEsImV4cCI6MTY1NTEwNDkwMSwiZGF0YSI6ImNzcmZUb2tlbnxzOjY0OlwiYzg1MmQ0NjgzZjZlZDE4ZDYwZDM3NDk1NWI2ZWFmNjQwNDI5MjViM2JkZWVmMGU3Nzg5NzM0MTUxMDdiNzA4N1wiO2d1ZXN0SWR8czozMjpcImEzYTM5NTYyYTdmNmM0NWZiNTM1NmM4OGQxY2QwYTAwXCI7dmlzaXRlZDIwMDU3ODJ8aToxOyJ9.JvxpBPObjFov4NZNIqW5fjJ_NsbLSYblRQPgJoCpVFPsACceMOMLr6wKUOQ_Wzm-M-0BAEnfGyI3EqVcuSS9Ow',
         }
 
         headers = {
@@ -64,8 +62,6 @@ def download(n_samples):
             'Accept-Language': 'vi-VN,vi;q=0.9,en-US;q=0.8,en;q=0.7,fr-FR;q=0.6,fr;q=0.5',
             'Cache-Control': 'max-age=0',
             'Connection': 'keep-alive',
-            # Requests sorts cookies= alphabetically
-            # 'Cookie': 'D1N=940bb901b1d42ebedf7a7bf2c1bb427c; be=160; AUTH_BEARER_default=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJpYXQiOjE2NTQ4MzY4NDcsImp0aSI6Ikl4dU5seFhmeFNXdnpNbis3UWwrbGhxbGdoVVlMd1wvMWQ1eE1iV2Z1THNNPSIsImlzcyI6ImdwbHguZ292LnZuIiwibmJmIjoxNjU0ODM2ODQ3LCJleHAiOjE2NTQ4NDA0NDcsImRhdGEiOiJjc3JmVG9rZW58czo2NDpcIjNlNWI3ZmFmZTI1OTdlNTViZTgwZDIyYjA1NWExNzExYmU5MzRjNzYxMTQ0OGFiMDc3YzE4MWY3NTAzNDE2ODhcIjtndWVzdElkfHM6MzI6XCI2ZDYyNmEyNTNmYjM4MzJlODI5NjFmZTg2NTQzZWMxMVwiO3Zpc2l0ZWQyMDA1NzgyfGk6MTsifQ.gXfLhysuUXQ9c6V0qWK07cKS8pN0vIDszQp44lfTpvkg88AmYEJuc6M5HdGsvKKQ9uoox6Gnk9qzC_oMeMO3Bw',
             'Sec-Fetch-Dest': 'document',
             'Sec-Fetch-Mode': 'navigate',
             'Sec-Fetch-Site': 'none',
@@ -83,6 +79,7 @@ def download(n_samples):
         # print(response.content)
         img = Image.open(BytesIO(response.content))
         img = np.array(img)[:, :, :3]
+        img = img[:, :, ::-1]
         label = ""
         # label = pretrained_read(img)
         # label = read_paddle_ocr(img)
@@ -94,4 +91,4 @@ def download(n_samples):
 
 
 if __name__ == '__main__':
-    download(3100)
+    download(3000)
