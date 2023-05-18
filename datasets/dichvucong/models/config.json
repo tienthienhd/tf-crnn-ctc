@@ -1,15 +1,15 @@
 {
   "DatasetConfig": {
     "data_name": "dichvucong",
-    "image_dir": "/media/thiennt/projects/mine/cv_end_to_end/training/ocr/crnn_ctc/datasets/dichvucong/generate",
-    "label_file": "/media/thiennt/projects/mine/cv_end_to_end/training/ocr/crnn_ctc/datasets/dichvucong/generate.csv",
+    "image_dir": "/media/thiennt/projects/mine/cv_end_to_end/training/ocr/crnn_ctc/datasets/dichvucong/train",
+    "label_file": "/media/thiennt/projects/mine/cv_end_to_end/training/ocr/crnn_ctc/datasets/dichvucong/label.csv",
     "work_dir": "/media/thiennt/projects/mine/cv_end_to_end/training/ocr/crnn_ctc/datasets/dichvucong",
     "data_dir": "annotations",
     "train_file_patterns": [
-      "*_train.records*"
+      "*cong_train.records*"
     ],
     "test_file_patterns": [
-      "*_test.records*"
+      "*cong_test.records*"
     ],
     "height": 50,
     "max_width": 165,
