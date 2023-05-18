@@ -56,6 +56,7 @@ def create_tf_record(image_dir: str, df_label: pd.DataFrame, characters: str, ou
     char_statistic = {k: v for k, v in sorted(char_statistic.items(), key=lambda item: item[1])}
 
     print(f'Charset statistic: {char_statistic}')
+    print(f'Charset actual: {"".join(sorted(char_statistic.keys()))}')
     print('===========================================================================')
 
     with contextlib.ExitStack() as tf_record_close_stack:

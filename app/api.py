@@ -5,6 +5,7 @@ from typing import List
 
 import cv2
 import numpy as np
+import requests
 import tensorflow.keras.backend as K
 import uvicorn
 from PIL import Image
@@ -26,7 +27,8 @@ app = FastAPI(
     openapi_prefix=prefix,
 )
 
-model_names = ['garena', 'zalo', 'vietcombank', 'csgt', 'gplx', 'payoo_web']
+# model_names = ['garena', 'zalo', 'vietcombank', 'csgt', 'gplx', 'payoo_web']
+model_names = ['dichvucong', 'xuatnhapcanh']
 
 model_inferences = {}
 configs = {}
@@ -49,18 +51,19 @@ async def load_config():
             "normalize": config.DatasetConfig.normalize
         }
 
-    if True:
-        import py_eureka_client.eureka_client as eureka_client
 
-        await eureka_client.init_async(eureka_server="http://172.16.10.111:8761/eureka/,http://172.16.20.67:8761/eureka/",
-                           app_name="captcha-ocr",
-                           instance_port=15000)
-
-
-@app.on_event("shutdown")
-async def shutdown_event():
-    import py_eureka_client.eureka_client as eureka_client
-    await eureka_client.stop_async()
+#     if True:
+#         import py_eureka_client.eureka_client as eureka_client
+#
+#         await eureka_client.init_async(eureka_server="http://172.16.10.111:8761/eureka/,http://172.16.20.67:8761/eureka/",
+#                            app_name="captcha-ocr",
+#                            instance_port=15000)
+#
+#
+# @app.on_event("shutdown")
+# async def shutdown_event():
+#     import py_eureka_client.eureka_client as eureka_client
+#     await eureka_client.stop_async()
 
 
 def predict(model_name, img):
@@ -72,8 +75,8 @@ def predict(model_name, img):
         img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
         img = np.expand_dims(img, axis=-1)
     img = img / 255.0
-    if configs[model_name].get('normalize'):
-        img = img - 0.5
+    # if configs[model_name].get('normalize'):
+    #     img = img - 0.5
     x = np.expand_dims(img, axis=0)
     y_pred = model_inferences[model_name].predict(x)
     out = K.get_value(K.ctc_decode(y_pred, input_length=np.ones(y_pred.shape[0]) * y_pred.shape[1], )[0][0])[:,
@@ -94,6 +97,13 @@ async def base64_to_image(img_str):
     img = Image.open(io.BytesIO(imgdata))
     opencv_img = cv2.cvtColor(np.array(img), cv2.COLOR_BGR2RGB)
     return opencv_img
+
+
+async def url_to_image(url):
+    res = requests.get(url)
+    npimg = np.frombuffer(res.content, np.int8)
+    img = cv2.imdecode(npimg, cv2.IMREAD_COLOR)
+    return img
 
 
 @app.get("/", include_in_schema=False)
@@ -119,6 +129,15 @@ async def ocr_captcha_route(model_name: str, image: ImageStr):
     if model_name not in model_names:
         return HTTPException(status_code=400, detail="Model not implemented")
     image = await base64_to_image(image.image)
+    result = predict(model_name, image)
+    return RecordBaseResponse(result=result)
+
+
+@app.post("/api/v1/captcha/{model_name}/url", response_model=RecordBaseResponse, tags=['captcha'])
+async def ocr_captcha_route(model_name: str, image: ImageStr):
+    if model_name not in model_names:
+        return HTTPException(status_code=400, detail="Model not implemented")
+    image = await url_to_image(image.image)
     result = predict(model_name, image)
     return RecordBaseResponse(result=result)
 
