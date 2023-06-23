@@ -178,6 +178,7 @@ def float_list_feature(value):
 def main():
     df_label = pd.read_csv(config.DatasetConfig.label_file, header=0, dtype={'filename': str, 'label': str},
                            keep_default_na=False, na_values=[''])
+    df_label = df_label.iloc[0: num]
     test_size = config.DatasetConfig.test_size
     if test_size < 1:
         test_size = test_size * len(df_label)
@@ -197,14 +198,15 @@ def main():
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--data', type=str, default="gplx")
-    parser.add_argument('--cfg', type=str, default="config.json")
+    parser.add_argument('--num', type=int, default="100")
+    parser.add_argument('--cfg', type=str, default="vietcombank2.json")
 
     args = parser.parse_args()
 
-    if args.cfg != 'config.json':
+    if args.cfg != 'vietcombank2.json':
         cfg = args.cfg
     else:
-        cfg = os.path.join(f'./datasets/{args.data}/models/config.json')
-
+        cfg = os.path.join(f'./datasets/{args.data}/models/vietcombank2.json')
+    num = args.num
     config.load_config(cfg)
     main()

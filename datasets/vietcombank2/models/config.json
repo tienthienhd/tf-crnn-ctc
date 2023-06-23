@@ -1,0 +1,78 @@
+{
+  "DatasetConfig": {
+    "data_name": "vietcombank",
+    "image_dir": "/media/thiennt/data/backup_old_ubuntu/data_id/projects/mine/cv_end_to_end/training/ocr/crnn_ctc/datasets/vietcombank2/image",
+    "label_file": "/media/thiennt/data/backup_old_ubuntu/data_id/projects/mine/cv_end_to_end/training/ocr/crnn_ctc/datasets/vietcombank2/image_.csv",
+    "work_dir": "/media/thiennt/data/backup_old_ubuntu/data_id/projects/mine/cv_end_to_end/training/ocr/crnn_ctc/datasets/vietcombank2",
+    "data_dir": "annotations",
+    "train_file_patterns": [
+      "*_train.records*"
+    ],
+    "test_file_patterns": [
+      "*_test.records*"
+    ],
+    "height": 50,
+    "max_width": 155,
+    "depth": 1,
+    "charset": "0123456789",
+    "max_len": 11,
+    "test_size": 0.05
+  },
+  "CnnConfig": {
+    "type_model": "stack",
+    "layers": [
+      {
+        "filter": 32,
+        "kernel_size": 3,
+        "padding": "same",
+        "strides": 1,
+        "pool_size": 2,
+        "padding_pool": "valid",
+        "batch_norm": true
+      },
+      {
+        "filter": 64,
+        "kernel_size": 3,
+        "padding": "same",
+        "strides": 1,
+        "pool_size": 2,
+        "padding_pool": "valid",
+        "batch_norm": true
+      },
+      {
+        "filter": 128,
+        "kernel_size": 3,
+        "padding": "same",
+        "strides": 1,
+        "pool_size": 2,
+        "padding_pool": "valid",
+        "batch_norm": true
+      }
+    ]
+  },
+  "RnnConfig": {
+    "input_depth": 64,
+    "input_dropout": 0.2,
+    "layers": [
+      {
+        "units": 128,
+        "dropout": 0.25
+      },
+      {
+        "units": 64,
+        "dropout": 0.25
+      }
+    ]
+  },
+  "HeadConfig": {
+    "classes": -1
+  },
+  "TrainingConfig": {
+    "augment_data": false,
+    "optimizer": "adam",
+    "learning_rate": 0.0001,
+    "epochs": 240,
+    "checkpoints": "",
+    "batch_size": 4
+  }
+}

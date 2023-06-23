@@ -1,6 +1,6 @@
-tensorflow
+tensorflow==2.11.0
 opencv_contrib_python==4.1.2.30
-numpy
-python-multipart
-py-eureka-client
-Pillow
+numpy==1.21.6
+python-multipart==0.0.6
+py-eureka-client==0.11.7
+Pillow==9.5.0

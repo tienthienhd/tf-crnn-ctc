@@ -28,7 +28,7 @@ app = FastAPI(
 )
 
 # model_names = ['garena', 'zalo', 'vietcombank', 'csgt', 'gplx', 'payoo_web']
-model_names = ['dichvucong', 'xuatnhapcanh']
+model_names = ['dichvucong', 'xuatnhapcanh', 'vietcombank2']
 
 model_inferences = {}
 configs = {}

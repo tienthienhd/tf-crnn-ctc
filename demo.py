@@ -26,23 +26,23 @@ def inference(img):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--data', type=str, default='dichvucong')
-    parser.add_argument('--cfg', type=str, default="config.json")
+    parser.add_argument('--cfg', type=str, default="vietcombank2.json")
 
     args = parser.parse_args()
 
-    config.load_config(f'datasets/{args.data}/models/config.json')
+    config.load_config(f'datasets/{args.data}/models/vietcombank2.json')
 
     model_path = f"datasets/{args.data}/models/last_inference_model.h5"
-    img_dir = list(sorted(glob.glob(config.DatasetConfig.image_dir + '/0299*'), reverse=True))
+    img_dir = list(sorted(glob.glob(config.DatasetConfig.image_dir + '/029*'), reverse=True))
 
     model = load_model(model_path)
 
     characters = config.DatasetConfig.charset
 
-    if args.cfg != 'config.json':
+    if args.cfg != 'vietcombank2.json':
         cfg = args.cfg
     else:
-        cfg = os.path.join(f'./datasets/{args.data}/models/config.json')
+        cfg = os.path.join(f'./datasets/{args.data}/models/vietcombank2.json')
 
     config.load_config(cfg)
     from PIL import Image

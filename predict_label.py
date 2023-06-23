@@ -49,14 +49,14 @@ def run(data_name, image_dir, label_file, output_file, start, end):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--data', type=str, default='garena_captcha')
-    parser.add_argument('--cfg', type=str, default="config.json")
+    parser.add_argument('--cfg', type=str, default="vietcombank2.json")
 
     args = parser.parse_args()
 
-    if args.cfg != 'config.json':
+    if args.cfg != 'vietcombank2.json':
         cfg = args.cfg
     else:
-        cfg = os.path.join(f'./datasets/{args.data}/models/config.json')
+        cfg = os.path.join(f'./datasets/{args.data}/models/vietcombank2.json')
 
     config.load_config(cfg)
     run(args.data,
