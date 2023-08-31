@@ -31,7 +31,7 @@ def run():
     #                           show_layer_names=True)
     initial_epoch = 0
     best_model_path = os.path.join(config.TrainingConfig.checkpoints, 'best_train_model.h5')
-    last_model_inference = os.path.join(config.TrainingConfig.checkpoints, 'vietcombank2.h5')
+    last_model_inference = os.path.join(config.TrainingConfig.checkpoints, f'{config.DatasetConfig.data_name}.h5')
     meta_file = os.path.join(config.TrainingConfig.checkpoints, 'checkpoint')
     if os.path.exists(best_model_path):
         training_model.load_weights(best_model_path)
@@ -69,14 +69,14 @@ def run():
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--data', type=str, default='vietcombank')
-    parser.add_argument('--cfg', type=str, default="vietcombank2.json")
+    parser.add_argument('--cfg', type=str, default="config.json")
 
     args = parser.parse_args()
 
-    if args.cfg != 'vietcombank2.json':
+    if args.cfg != 'config.json':
         cfg = args.cfg
     else:
-        cfg = os.path.join(f'./datasets/{args.data}/models/vietcombank2.json')
+        cfg = os.path.join(f'./datasets/{args.data}/models/config.json')
 
     config.load_config(cfg)
     run()

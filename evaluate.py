@@ -89,14 +89,14 @@ def load_model_from_dataset(dataset):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--data", type=str, default="vietcombank")
-    parser.add_argument("--cfg", type=str, default="vietcombank2.json")
+    parser.add_argument("--cfg", type=str, default="config.json")
     args = parser.parse_args()
-    if args.cfg != 'vietcombank2.json':
+    if args.cfg != 'config.json':
         cfg = args.cfg
     else:
-        cfg = os.path.join(f'./datasets/{args.data}/models/vietcombank2.json')
+        cfg = os.path.join(f'./datasets/{args.data}/models/config.json')
     config.load_config(cfg)
-    path_best_model = os.path.join(config.TrainingConfig.checkpoints, 'vietcombank2.h5')
+    path_best_model = os.path.join(config.TrainingConfig.checkpoints, f'{config.DatasetConfig.data_name}.h5')
     dataset = get_data('test')
     img, lb, predict = load_model_from_dataset(dataset)
     lb = list(chain.from_iterable(lb))

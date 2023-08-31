@@ -1,5 +1,6 @@
 import argparse
 import os
+import string
 import sys
 
 import contextlib
@@ -175,10 +176,27 @@ def float_list_feature(value):
     return tf.train.Feature(float_list=tf.train.FloatList(value=value))
 
 
+def filter_not_in_charset(df_label, charset=string.ascii_letters + string.digits):
+    records = []
+    for idx, row in df_label.iterrows():
+        l = row['label']
+        if all([c in charset for c in l]):
+            records.append({
+                "filename": row["filename"],
+                "label": row["label"]
+            })
+    return pd.DataFrame.from_records(records)
+    # return df_label[~df_label['Column1'].str.contains('a')]
+
+
 def main():
     df_label = pd.read_csv(config.DatasetConfig.label_file, header=0, dtype={'filename': str, 'label': str},
                            keep_default_na=False, na_values=[''])
-    df_label = df_label.iloc[0: num]
+    if num > 0:
+        df_label = df_label.iloc[0: num]
+
+    if filter_charset:
+        df_label = filter_not_in_charset(df_label, config.DatasetConfig.charset)
     test_size = config.DatasetConfig.test_size
     if test_size < 1:
         test_size = test_size * len(df_label)
@@ -198,15 +216,17 @@ def main():
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--data', type=str, default="gplx")
-    parser.add_argument('--num', type=int, default="100")
-    parser.add_argument('--cfg', type=str, default="vietcombank2.json")
+    parser.add_argument('--num', type=int, default="0")
+    parser.add_argument('--filter_charset', type=bool, default="true")
+    parser.add_argument('--cfg', type=str, default="config.json")
 
     args = parser.parse_args()
 
-    if args.cfg != 'vietcombank2.json':
+    if args.cfg != 'config.json':
         cfg = args.cfg
     else:
-        cfg = os.path.join(f'./datasets/{args.data}/models/vietcombank2.json')
+        cfg = os.path.join(f'./datasets/{args.data}/models/config.json')
     num = args.num
+    filter_charset = args.filter_charset
     config.load_config(cfg)
     main()
