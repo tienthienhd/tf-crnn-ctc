@@ -1,4 +1,4 @@
-tensorflow==2.11.0
+tensorflow==2.11.1
 opencv_contrib_python==4.1.2.30
 numpy==1.21.6
 python-multipart==0.0.6
