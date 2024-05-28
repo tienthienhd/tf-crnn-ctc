@@ -1,7 +1,7 @@
 opencv-python==4.2.0.32
 tensorflow==2.11.1
 numpy==1.19.5
-requests==2.25.1
+requests==2.32.2
 pillow==10.3.0
 matplotlib==3.3.4
 strsimpy==0.2.0
