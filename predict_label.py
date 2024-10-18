@@ -26,15 +26,15 @@ def inference(model, img, characters):
 
 def get_label(file_path, model, characters):
     img = cv2.imread(file_path, cv2.IMREAD_GRAYSCALE)
-    img = cv2.resize(img, (121, 65))
+    img = cv2.resize(img, (120, 50))
     img = np.expand_dims(img, axis=-1)
-    img_ = img / 255.0 - 0.5
+    img_ = img / 255.0
     pred = inference(model, img_, characters)
     return pred
 
 
 def run(data_name, image_dir, label_file, output_file, start, end):
-    model_path = f"datasets/{data_name}/models/last_inference_model.h5"
+    model_path = f"datasets/{data_name}/models/{data_name}.h5"
     model = load_model(model_path)
     characters = config.DatasetConfig.charset
 
@@ -48,8 +48,8 @@ def run(data_name, image_dir, label_file, output_file, start, end):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('--data', type=str, default='garena_captcha')
-    parser.add_argument('--cfg', type=str, default="vietcombank2.json")
+    parser.add_argument('--data', type=str, default='evisa')
+    parser.add_argument('--cfg', type=str, default="evisa.json")
 
     args = parser.parse_args()
 
@@ -58,9 +58,9 @@ if __name__ == '__main__':
     else:
         cfg = os.path.join(f'./datasets/{args.data}/models/vietcombank2.json')
 
-    config.load_config(cfg)
+    config.load_config(f'datasets/{args.data}/models/evisa.json')
     run(args.data,
         config.DatasetConfig.image_dir,
         config.DatasetConfig.label_file,
-        f'./datasets/{args.data}/annotations/label.csv',
-        1000, 5000)
+        f'./datasets/{args.data}/annotations/predict.csv',
+        3000, 5000)

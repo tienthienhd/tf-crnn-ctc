@@ -88,13 +88,13 @@ def load_model_from_dataset(dataset):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("--data", type=str, default="vietcombank")
-    parser.add_argument("--cfg", type=str, default="config.json")
+    parser.add_argument("--data", type=str, default="evisa")
+    parser.add_argument("--cfg", type=str, default="evisa.json")
     args = parser.parse_args()
-    if args.cfg != 'config.json':
+    if args.cfg != 'evisa.json':
         cfg = args.cfg
     else:
-        cfg = os.path.join(f'./datasets/{args.data}/models/config.json')
+        cfg = os.path.join(f'./datasets/{args.data}/models/evisa.json')
     config.load_config(cfg)
     path_best_model = os.path.join(config.TrainingConfig.checkpoints, f'{config.DatasetConfig.data_name}.h5')
     dataset = get_data('test')

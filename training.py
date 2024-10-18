@@ -40,7 +40,7 @@ def run():
             initial_epoch = meta['epochs']
     # model.save(last_model_inference, include_optimizer=False)
     callbacks = [
-        tf.keras.callbacks.EarlyStopping(patience=5),
+        tf.keras.callbacks.EarlyStopping(patience=3),
         # tf.keras.callbacks.TensorBoard(config.TrainingConfig.checkpoints, update_freq='batch'),
         ModelCheckpointCallback(best_model_path, meta_file, save_best_only=True)
     ]
@@ -53,6 +53,7 @@ def run():
                                  initial_epoch=initial_epoch,
                                  epochs=config.TrainingConfig.epochs)
 
+    training_model.load_weights(best_model_path)
     # Save model
     model.save(last_model_inference, include_optimizer=False)
 
@@ -68,15 +69,15 @@ def run():
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('--data', type=str, default='vietcombank')
-    parser.add_argument('--cfg', type=str, default="config.json")
+    parser.add_argument('--data', type=str, default='evisa')
+    parser.add_argument('--cfg', type=str, default="evisa.json")
 
     args = parser.parse_args()
 
-    if args.cfg != 'config.json':
+    if args.cfg != 'evisa.json':
         cfg = args.cfg
     else:
-        cfg = os.path.join(f'./datasets/{args.data}/models/config.json')
+        cfg = os.path.join(f'./datasets/{args.data}/models/evisa.json')
 
     config.load_config(cfg)
     run()
