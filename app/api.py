@@ -28,7 +28,8 @@ app = FastAPI(
 )
 
 # model_names = ['garena', 'zalo', 'vietcombank', 'csgt', 'gplx', 'payoo_web']
-model_names = ['dichvucong', 'xuatnhapcanh', 'vietcombank2', 'vcb_nganluong']
+# model_names = ['dichvucong', 'xuatnhapcanh', 'vietcombank2', 'vcb_nganluong', 'evisa']
+model_names = ['evisa']
 
 model_inferences = {}
 configs = {}
@@ -50,20 +51,6 @@ async def load_config():
             "charset": config.DatasetConfig.charset,
             "normalize": config.DatasetConfig.normalize
         }
-
-
-#     if True:
-#         import py_eureka_client.eureka_client as eureka_client
-#
-#         await eureka_client.init_async(eureka_server="http://172.16.10.111:8761/eureka/,http://172.16.20.67:8761/eureka/",
-#                            app_name="captcha-ocr",
-#                            instance_port=15000)
-#
-#
-# @app.on_event("shutdown")
-# async def shutdown_event():
-#     import py_eureka_client.eureka_client as eureka_client
-#     await eureka_client.stop_async()
 
 
 def predict(model_name, img):
@@ -110,7 +97,7 @@ async def preprocess_image_evisa(image_str):
     image_str = image_str.replace('data:image/png;base64,', '')
     img_data = base64.b64decode(image_str)
     img = Image.open(io.BytesIO(img_data))
-    img = img.resize((120, 50))
+    # img = img.resize((120, 50))
     arr = np.array(img)
 
     arr[arr == 0] = 255

@@ -1,9 +1,9 @@
 {
   "DatasetConfig": {
     "data_name": "evisa",
-    "image_dir": "/Users/tienthien/workspace/mine/tf-crnn-ctc/datasets/evisa/train_jpg",
-    "label_file": "/Users/tienthien/workspace/mine/tf-crnn-ctc/datasets/evisa/train1.csv",
-    "work_dir": "/Users/tienthien/workspace/mine/tf-crnn-ctc/datasets/evisa",
+    "image_dir": "C:/Users/thiennt/PycharmProjects/tf-crnn-ctc/datasets/evisa/train_jpg",
+    "label_file": "C:/Users/thiennt/PycharmProjects/tf-crnn-ctc/datasets/evisa/train2.csv",
+    "work_dir": "C:/Users/thiennt/PycharmProjects/tf-crnn-ctc/datasets/evisa",
     "data_dir": "annotations",
     "train_file_patterns": [
       "*_train.records*"
@@ -12,7 +12,7 @@
       "*_test.records*"
     ],
     "height": 50,
-    "max_width": 165,
+    "max_width": 120,
     "depth": 1,
     "charset": "0123456789",
     "max_len": 11,
@@ -70,7 +70,7 @@
   "TrainingConfig": {
     "augment_data": false,
     "optimizer": "adam",
-    "learning_rate": 0.001,
+    "learning_rate": 0.0001,
     "epochs": 240,
     "checkpoints": "",
     "batch_size": 4
