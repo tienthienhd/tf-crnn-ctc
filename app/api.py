@@ -106,6 +106,19 @@ async def url_to_image(url):
     return img
 
 
+async def preprocess_image_evisa(image_str):
+    image_str = image_str.replace('data:image/png;base64,', '')
+    img_data = base64.b64decode(image_str)
+    img = Image.open(io.BytesIO(img_data))
+    img = img.resize((120, 50))
+    arr = np.array(img)
+
+    arr[arr == 0] = 255
+    arr = np.expand_dims(arr, axis=-1)
+    arr = np.concatenate((arr, arr, arr), axis=-1)
+    return arr
+
+
 @app.get("/", include_in_schema=False)
 def docs_redirect():
     return RedirectResponse(f"{prefix}/docs")
@@ -128,7 +141,10 @@ class ImageStr(BaseModel):
 async def ocr_captcha_route(model_name: str, image: ImageStr):
     if model_name not in model_names:
         return HTTPException(status_code=400, detail="Model not implemented")
-    image = await base64_to_image(image.image)
+    if model_name == 'evisa':
+        image = await preprocess_image_evisa(image.image)
+    else:
+        image = await base64_to_image(image.image)
     result = predict(model_name, image)
     return RecordBaseResponse(result=result)
 
